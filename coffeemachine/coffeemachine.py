@@ -9,6 +9,9 @@ class CoffeeMachine:
         self.state = "main_menu"
         self.fill_step = 0
 
+    def is_number(self, value):
+        return value.isdigit()
+
     def print_state(self):
         print("The coffee machine has:")
         print(f"{self.water} of water")
@@ -76,31 +79,41 @@ class CoffeeMachine:
                 if self.check_resources(200, 100, 12):
                     self.make_coffee(200, 100, 12, 6)
 
+            else:
+                print("Invalid coffee type!")
+
             self.state = "main_menu"
 
         # FILL STATE
         elif self.state == "fill":
+
+            if not self.is_number(user_input):
+                print("Error: you must enter a number!")
+                return  # stay in the same state waiting for correct number
+
+            user_value = int(user_input)
+
             if self.fill_step == 1:
-                self.water += int(user_input)
+                self.water += user_value
                 print("Write how many ml of milk do you want to add:")
                 self.fill_step = 2
+
             elif self.fill_step == 2:
-                self.milk += int(user_input)
+                self.milk += user_value
                 print("Write how many grams of coffee beans do you want to add:")
                 self.fill_step = 3
+
             elif self.fill_step == 3:
-                self.beans += int(user_input)
+                self.beans += user_value
                 print("Write how many disposable cups of coffee do you want to add:")
                 self.fill_step = 4
+
             elif self.fill_step == 4:
-                self.cups += int(user_input)
+                self.cups += user_value
                 self.state = "main_menu"
 
     def is_running(self):
         return self.state != "exit"
-
-
-# ------------ RUN PROGRAM ------------
 
 machine = CoffeeMachine()
 
