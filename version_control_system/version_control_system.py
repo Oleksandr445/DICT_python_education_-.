@@ -22,7 +22,7 @@ def ensure_vcs():
 def read_file(path):
     try:
         with open(path, "r") as f:
-            return f.read().strip()
+            return f.read()
     except FileNotFoundError:
         return ""
 
@@ -32,7 +32,7 @@ def write_file(path, data):
         f.write(data)
 
 
-def show_help():
+def show_help(args=None):
     print("""These are VCS commands:
 config Get and set a username.
 add Add a file to the index.
@@ -45,7 +45,7 @@ def config(args):
     ensure_vcs()
 
     if len(args) == 0:
-        username = read_file(CONFIG_FILE)
+        username = read_file(CONFIG_FILE).strip()
         if username:
             print(f"The username is {username}.")
         else:
@@ -122,17 +122,21 @@ def commit(args):
         if os.path.exists(file):
             shutil.copy(file, commit_path)
 
-    username = read_file(CONFIG_FILE)
+    username = read_file(CONFIG_FILE).strip()
 
-    with open(LOG_FILE, "a") as log_file:
-        log_file.write(f"commit {new_hash}\n")
-        log_file.write(f"Author: {username}\n")
-        log_file.write(f"{message}\n\n")
+    new_entry = (
+        f"commit {new_hash}\n"
+        f"Author: {username}\n"
+        f"{message}\n\n"
+    )
+
+    # 👇 ВАЖНО: записываем новый коммит В НАЧАЛО
+    write_file(LOG_FILE, new_entry + log_content)
 
     print("Changes are committed.")
 
 
-def show_log():
+def show_log(args):
     ensure_vcs()
 
     content = read_file(LOG_FILE)
